@@ -1,0 +1,140 @@
+{% paginate section.settings.collection.products by section.settings.products_to_show %}
+  <div
+    class="px-[15px] sm:px-[30px] p-[50px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[15px] items-end"
+    id="product-grid"
+    data-current-page="{{ paginate.current_page }}"
+    data-total-pages="{{ paginate.pages }}"
+  >
+    {% if paginate.items.size > 0 %}
+      {% for product in section.settings.collection.products %}
+        <div id="product-{{ product.id }}" class="product-card">
+          <a class="hover:opacity-100" href="{{ product.url }}">
+            <div class="group relative h-fit w-full">
+              <!-- Image container -->
+              <div class="relative">
+                <!-- First image -->
+                <img
+                  class="transition-all opacity-100 w-full object-cover group-hover:opacity-0"
+                  alt="{{ product.title }}" loading="eager"
+                  src="{{ product.featured_image | img_url: '600x600' }}"
+                  srcset="
+                    {{ product.featured_image | img_url: '600x600' }} 600w,
+                    {{ product.featured_image | img_url: '900x900' }} 900w,
+                    {{ product.featured_image | img_url: '1200x1200' }} 1200w
+                  "
+                >
+                <!-- Second image (hover image) -->
+                {% if product.images.size > 1 %}
+                  <img
+                    class="absolute top-0 left-0 w-full h-full object-contain opacity-0 transition-opacity group-hover:opacity-100"
+                    alt="{{ product.title }} (hover)"
+                    src="{{ product.images[1] | img_url: '600x600' }}"
+                    srcset="
+                      {{ product.images[1] | img_url: '600x600' }} 600w,
+                      {{ product.images[1] | img_url: '900x900' }} 900w,
+                      {{ product.images[1] | img_url: '1200x1200' }} 1200w
+                    "
+                  >
+                {% endif %}
+              </div>
+              <!-- Text and details -->
+              <div class="flex flex-col h-full w-full items-center justify-end pt-[18px]">
+                <p class="bold-body text-center font-extrabold text-xs text-ellipsis">
+                  <small>{{ product.title }}</small>
+                </p>
+                <p class="body text-center mt-[2px] text-[10px]">{{ product.price | money }}</p>
+              </div>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    {% else %}
+      <!-- Empty state message -->
+      <div class="text-center w-full">
+        <p>No products found in this collection.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Pagination Controls -->
+  {% if section.settings.show_pagination %}
+    <div class="flex w-full justify-center mb-[30px]">
+      <!-- Previous Page Link -->
+      {% if paginate.previous.is_link %}
+        <a href="{{ paginate.previous.url }}" class="cta mr-[9px] font-semibold"> Previous Page </a>
+      {% else %}
+        <span class="cta mr-[9px] font-semibold pointer-events-none opacity-50"> Previous Page </span>
+      {% endif %}
+
+      <!-- Next Page Link -->
+      {% if paginate.next.is_link %}
+        <a href="{{ paginate.next.url }}" class="cta ml-[9px] font-semibold"> Next Page </a>
+      {% else %}
+        <span class="cta ml-[9px] font-semibold pointer-events-none opacity-50"> Next Page </span>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endpaginate %}
+{% schema %}
+{
+  "name": "featured-collection",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        { "value": "h2", "label": "H2" },
+        { "value": "h1", "label": "H1" },
+        { "value": "h0", "label": "H0" },
+        { "value": "hxl", "label": "HXL" },
+        { "value": "hxxl", "label": "HXXL" }
+      ],
+      "default": "h1",
+      "label": "Heading Size"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show Description",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pagination",
+      "label": "Show Pagination",
+      "default": false
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 25,
+      "step": 1,
+      "default": 8,
+      "label": "Products to Show"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "Columns on Desktop"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "default": true,
+      "label": "Show View All Button"
+    }
+  ]
+}
+{% endschema %}

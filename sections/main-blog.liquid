@@ -1,0 +1,14 @@
+<section>
+  <h1>{{ blog.title | escape }}</h1>
+  <div>
+    {%- for article in blog.articles -%}
+        <h2>{{ article.title | escape }}</h2>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Blog"
+}
+{% endschema %}

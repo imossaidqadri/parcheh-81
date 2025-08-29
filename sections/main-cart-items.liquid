@@ -1,0 +1,91 @@
+{% comment %} <p class="page-title absolute">
+  {{ 'sections.cart.title' | t }}
+</p> {% endcomment %}
+<form
+  method="post"
+  action="/cart"
+  id="cart_form"
+  accept-charset="UTF-8"
+  class="shopify-cart-form max-w-xl mx-auto"
+  enctype="multipart/form-data"
+>
+  <input type="hidden" name="form_type" value="cart"><input type="hidden" name="utf8" value="✓">
+  <div
+    id="drawer"
+    class="relative w-full  bg-white flex flex-col rounded-[8px] p-[30px] h-full max-h-fit"
+  >
+    <style>
+      .cart-scroll-overflow-gradient {
+        {% comment %} max-height: 90vh; {% endcomment %}
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        overflow-scrolling: touch;
+
+        background:
+            /* Shadow Cover TOP */ linear-gradient(white 30%, rgba(255, 255, 255, 0)) center top,
+          /* Shadow Cover BOTTOM */ linear-gradient(rgba(255, 255, 255, 0), white 70%) center bottom,
+          /* Shadow TOP */ radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) center top,
+          /* Shadow BOTTOM */ radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) center
+            bottom;
+
+        background-repeat: no-repeat;
+        background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+        background-attachment: local, local, scroll, scroll;
+      }
+    </style>
+    <div class="cart-scroll-overflow-gradient- h-full z-1 mt-[15px] flex flex-col gap-[2rem] flex-grow">
+      {%- if cart != empty -%}
+        {%- for item in cart.items -%}
+          <cart-item data-product-id="44658226462878">
+            <div class="flex  gap-[15px] ">
+              <div class="justify-center flex-col flex flex-1 gap-[9px]">
+                <p class="font-bold uppercase">
+                  {% liquid
+                    render 'main-cart-details', item: item
+                  %}
+                </p>
+                {% liquid
+                  render 'main-cart-remove', item: item
+                %}
+              </div>
+              {% liquid
+                render 'main-cart-media', item: item
+              %}
+            </div>
+          </cart-item>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    <div class="flex flex-col z-5 py-8 border-t bg-white sticky bottom-0 gap-[15px] flex-grow-0 flex-shrink-0 mt-[30px]">
+      <div class="flex justify-between gap-[9px] ">
+        <p>Subtotal:</p>
+        {% comment %}
+          This snippet calculates the subtotal of the cart items and displays it.
+        {% endcomment %}
+
+        {% assign subtotal = 0 %}
+
+        {% for item in cart.items %}
+          {% assign item_total = item.line_price %}
+          {% assign subtotal = subtotal | plus: item_total %}
+        {% endfor %}
+
+        <p>{{ subtotal | money }}</p>
+      </div>
+      <button class="big-btn bg-black text-white !text-center sm:!text-left  " type="submit" name="checkout">
+        Check Out
+      </button>
+    </div>
+
+    <div class="additional-checkout-buttons--vertical">
+      <div class="dynamic-checkout__content" id="dynamic-checkout-cart" data-shopify="dynamic-checkout-cart"></div>
+    </div>
+  </div>
+</form>
+
+{% schema %}
+{
+  "name": "Cart Items"
+}
+{% endschema %}

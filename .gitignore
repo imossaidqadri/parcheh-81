@@ -1,0 +1,13 @@
+# Shopify theme development
+.shopifyignore
+.DS_Store
+node_modules/
+*.log
+.env
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db

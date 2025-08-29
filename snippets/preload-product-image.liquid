@@ -1,0 +1,7 @@
+{% comment %} {%- for media in product.media -%}
+  {{ 
+    media.preview_image
+      | image_url: width: 600 
+      | image_tag: preload: true 
+  }}
+{%- endfor -%} {% endcomment %}

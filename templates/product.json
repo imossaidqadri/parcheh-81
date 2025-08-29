@@ -1,0 +1,1 @@
+{"sections":{"main-product":{"type":"main-product","settings":{}},"recommended_products":{"type":"recommended-products","settings":{"heading_size":"h2","show_description":false,"show_pagination":false,"products_to_show":8,"columns_desktop":4}},"ad_cards":{"type":"ad-cards","disabled":true,"settings":{}}},"order":["main-product","recommended_products","ad_cards"]}

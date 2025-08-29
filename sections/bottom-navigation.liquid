@@ -1,0 +1,46 @@
+<div
+  class="fixed w-screen flex justify-center left-0 p-[15px] sm:p-[30px] pointer-events-none z-[100] bottom-0 transition-opacity duration-300"
+  id="collection-nav"
+  style="opacity: 1; pointer-events: auto;"
+>
+  {% assign active = 'cta text-black rounded-[4px] bg-white py-[4.5px] p-[10px]' %}
+  {% assign normal = 'cta text-white capitalize py-[4.5px] p-[10px]' %}
+  <form class="rounded-[8px] border border-white bg-black p-[10px] gap-[5px] flex flex-row items-center max-w-fit  h-full w-full overflow-x-scroll hide-scrollbar whitespace-nowrap pointer-events-auto">
+    {% for link in section.settings.menu.links %}
+      {% assign is_active = false %}
+
+      {% if link.url == request.path or link.url == request.url %}
+        {% assign is_active = true %}
+      {% endif %}
+
+      <a
+        href="{{ link.url }}"
+        title="{{ link.title }}"
+        {% if is_active %}
+          class="{{active}}"
+        {% else %}
+          class="{{normal}}"
+        {% endif %}
+        {% if link.target == '_blank' %}
+          target="_blank" rel="noopener noreferrer"
+        {% endif %}
+      >
+        {{ link.title }}
+      </a>
+    {% endfor %}
+  </form>
+</div>
+
+{% schema %}
+{
+  "name": "Bottom Navigation",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    }
+  ]
+}
+{% endschema %}

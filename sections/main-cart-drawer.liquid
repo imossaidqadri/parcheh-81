@@ -1,0 +1,109 @@
+<div
+  id="cart-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 px-4 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+  <form
+    method="post"
+    action="/cart"
+    id="cart_form"
+    accept-charset="UTF-8"
+    class="shopify-cart-form max-w-sm-mx-auto"
+    enctype="multipart/form-data"
+  >
+    <input type="hidden" name="form_type" value="cart"><input type="hidden" name="utf8" value="✓">
+    <div
+      id="drawer"
+      class="relative w-full max-w-[450px] sm:w-[450px] bg-white flex flex-col rounded-[8px] p-[30px] h-full max-h-fit"
+    >
+      <button id="close" type="button" data-modal-target="cart-modal"
+        data-modal-toggle="cart-modal" class="absolute w-[12px] h-[12px] top-[30px] right-[30px]" aria-label="Close Menu">
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 9 9"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke-black"
+        >
+          <path stroke-width=".5" d="M0.802541 0.257141L8.84083 8.29543L8.29466 8.84005L0.257141 0.802541L0.802541 0.257141Z" fill="black"></path>
+          <path stroke-width=".5" d="M8.29465 0.257141L0.256363 8.29543L0.802534 8.84083L8.84082 0.802541L8.29465 0.257141Z" fill="black"></path>
+        </svg>
+      </button>
+
+      <p class="page-title">
+        {{ 'sections.cart.title' | t }}
+      </p>
+      <style>
+        .cart-scroll-overflow-gradient {
+          max-height: 600px;
+          overflow: auto;
+          -webkit-overflow-scrolling: touch;
+          overflow-scrolling: touch;
+
+          background:
+              /* Shadow Cover TOP */ linear-gradient(white 30%, rgba(255, 255, 255, 0)) center top,
+            /* Shadow Cover BOTTOM */ linear-gradient(rgba(255, 255, 255, 0), white 70%) center bottom,
+            /* Shadow TOP */ radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) center top,
+            /* Shadow BOTTOM */ radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) center
+              bottom;
+
+          background-repeat: no-repeat;
+          background-size: 100% 40px, 100% 40px, 100% 14px, 100% 14px;
+          background-attachment: local, local, scroll, scroll;
+        }
+      </style>
+      <div class="cart-scroll-overflow-gradient z-10 mt-[15px] flex flex-col gap-[2rem] flex-grow sm:flex-grow-0 overflow-y-auto overflow-x-hidden">
+        {%- if cart != empty -%}
+          {%- for item in cart.items -%}
+            <cart-item data-product-id="44658226462878">
+              <div class="flex  gap-[15px] ">
+                <div class="justify-center flex-col flex flex-1 gap-[9px]">
+                  <p class="font-bold uppercase">
+                    {% liquid
+                      render 'main-cart-details', item: item
+                    %}
+                  </p>
+                  {% liquid
+                    render 'main-cart-remove', item: item
+                  %}
+                </div>
+                {% liquid
+                  render 'main-cart-media', item: item
+                %}
+              </div>
+            </cart-item>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+
+      <div class="flex flex-col gap-[15px] flex-grow-0 flex-shrink-0 mt-[30px]">
+        <div class="flex justify-between gap-[9px] ">
+          <p>Subtotal:</p>
+          {% comment %}
+            This snippet calculates the subtotal of the cart items and displays it.
+          {% endcomment %}
+
+          {% assign subtotal = 0 %}
+
+          {% for item in cart.items %}
+            {% assign item_total = item.line_price %}
+            {% assign subtotal = subtotal | plus: item_total %}
+          {% endfor %}
+
+          <p>{{ subtotal | money }}</p>
+        </div>
+        <button class="big-btn bg-black text-white !text-center sm:!text-left  " type="submit" name="checkout">
+          Check Out
+        </button>
+      </div>
+
+      <div class="additional-checkout-buttons--vertical">
+        <div class="dynamic-checkout__content" id="dynamic-checkout-cart" data-shopify="dynamic-checkout-cart"></div>
+      </div>
+    </div>
+  </form>
+</div>
+
+{% schema %}
+{
+  "name": "Cart Items"
+}
+{% endschema %}

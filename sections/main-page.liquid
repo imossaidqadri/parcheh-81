@@ -1,0 +1,23 @@
+<div class="min-h-screen">
+  <div class="my-[104px] flex flex-col gap-10 lg:static mx-auto">
+    <div class="relative hidden md:lg:flex mx-auto lg:absolute pl-0 lg:pl-[10vw] flex-col">
+      <h1 class="page-title">
+        {{ page.title }}
+      </h1>
+    </div>
+    <div class="flex mx-auto w-[70vw] lg:!w-[41.8vw] flex-col gap-[7px]">
+      <meta charset="utf-8">
+      <h1 class="page-title md:lg:hidden">
+        {{ page.title }}
+      </h1>
+      <p data-mce-fragment="1">
+        {{ page.content }}
+    </div>
+  </div> 
+</div>
+
+{% schema %}
+{
+  "name": "Page"
+}
+{% endschema %}

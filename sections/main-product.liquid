@@ -1,0 +1,184 @@
+<section>
+  <div class="flex flex-col sm:grid grid-cols-2 sm:grid-cols-12 gap-[15px] px-[15px] sm:px-[30px]">
+    <!-- Center Column (Product Images) -->
+    <div class="col-span-6 -mx-[15px] md:mx-0">
+      <div class="hidden sm:flex flex-col gap-[10px]">
+        {% for image in product.images %}
+          <img
+            alt="{{ image.alt | escape }}"
+            src="{{ image | img_url: '1024x1024' }}"
+            loading="eager"
+            srcset="
+              {{ image | img_url: '375x' }} 375w,
+              {{ image | img_url: '750x' }} 750w,
+              {{ image | img_url: '1280x' }} 1280w,
+              {{ image | img_url: '2048x' }} 2048w
+            "
+          >
+        {% endfor %}
+      </div>
+      {% comment %}
+        <link
+          href="//yori.nyc/cdn/shop/t/13/assets/swiper-bundle.min.css?v=138879063338843649161730817872"
+          rel="stylesheet"
+          type="text/css"
+          media="all"
+        >
+        <script
+          src="//yori.nyc/cdn/shop/t/13/assets/swiper-bundle.min.js?v=76204931248172345031730817871"
+          type="text/javascript"
+        ></script>
+        <script defer>
+          class SlideShow extends HTMLElement {
+            constructor() {
+              super(), this.initSwiper();
+            }
+            initSwiper() {
+              const swiperContainer = this;
+              if ((console.log(swiperContainer), swiperContainer)) {
+                const swiper = new Swiper('.swiper', {
+                  slidesPerView: 1,
+                  spaceBetween: 0,
+                  speed: 400,
+                  on: { init: this.updateProgressBar.bind(this), slideChange: this.updateProgressBar.bind(this) },
+                });
+                console.log(swiper);
+              }
+            }
+            updateProgressBar() {
+              (this.querySelector("div[id='progress']").style.width = `${
+                ((this.swiper.activeIndex + 1) / this.swiper.slides.length) * 100
+              }%`),
+                console.log(this.swiper.activeIndex + 1, this.swiper.slides.length);
+            }
+          }
+          customElements.get('product-slideshow') || customElements.define('product-slideshow', SlideShow);
+        </script>
+      {% endcomment %}
+      <product-slideshow class="w-screen sm:!hidden gap-[15px] swiper-initialized-swiper-horizontal">
+        <div
+          class="swiper-wrapper max-w-screen overflow-y-hidden overflow-x-scroll"
+          style="scroll-snap-type: x mandatory; display: flex;"
+        >
+          {% for image in product.images %}
+            <img
+              class="w-screen" style="scroll-snap-align: center;"
+              {% comment %} style="height: calc(100vw / 0.8)" {% endcomment %}
+              alt="{{ image.alt | escape }}"
+              src="{{ image | img_url: '1024x1024' }}"
+              loading="eager"
+              srcset="
+                {{ image | img_url: '375x' }} 375w,
+                {{ image | img_url: '750x' }} 750w,
+                {{ image | img_url: '1280x' }} 1280w,
+                {{ image | img_url: '2048x' }} 2048w
+              "
+            >
+          {% endfor %}
+        </div>
+      </product-slideshow>
+    </div>
+
+    <!-- Right Column (Purchase Options) -->
+    <div class="col-span-6 md:col-span-5 2xl:col-span-4">
+      <div class="flex flex-col sm:h-screen gap-[15px] justify-center top-0 sticky">
+        <div class="flex justify-between flex-col gap-[5px] ">
+          <div class="flex gap-[6px]">
+            <a href="/collections/{{ product.vendor | handleize }}" class="bold-body">{{ product.vendor }}</a>
+            <span class="bold-body">/</span>
+          </div>
+          <h1 class="page-title ">{{ product.title }}</h1>
+          <span class="text-[17px] font-bold !text-normal">{{ product.price | money }}</span>
+        </div>
+        <div>
+          <form
+            method="post"
+            action="/cart/add"
+            id="product_form_{{ product.id }}"
+            accept-charset="UTF-8"
+            class="shopify-product-form"
+            enctype="multipart/form-data"
+          >
+            <input type="hidden" name="form_type" value="product">
+            <input type="hidden" name="utf8" value="✓">
+            <cart-add class="flex flex-col gap-[15px]">
+              <div class="variant-options flex flex-col w-full gap-[10px] flex-wrap">
+                <p class="bold-body">Size</p>
+                <div class="flex flex-row flex-wrap gap-y-[6px]">
+                  {% for variant in product.variants %}
+                    <div
+                      id="variant-{{ variant.id }}"
+                      class="variant-option cta cursor-pointer {% if variant.available == false %}!opacity-30 sm:opacity-100 text-[#979797] !border-[#979797] pointer-events-none relative sm:line-through decoration-black decoration-1{% endif %}"
+                      data-variant-id="{{ variant.id }}"
+                      onclick="selectVariant({{ variant.id }})"
+                    >
+                      {{ variant.title }}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+        
+              <input name="id" type="hidden" id="selected-variant-id" value="{{ product.variants.first.id }}">
+              <div class="flex flex-col md:w-full gap-[7.5px] cta">
+                <button id="atc" class="big-btn bg-black !text-white hover:opacity-85 transition-opacity" type="submit">
+                  Add to Cart
+                </button>
+                <button id="quick-checkout" class="big-btn hover:bg-black/5 transition-colors hidden" type="submit">
+                  Quick Buy
+                </button>
+              </div>
+            </cart-add>
+            <input type="hidden" name="product-id" value="{{ product.id }}">
+          </form>
+        </div>
+        
+        <script>
+          // Function to handle variant selection
+          function selectVariant(variantId) {
+            // Update the hidden input field with the selected variant ID
+            document.getElementById('selected-variant-id').value = variantId;
+        
+            // Remove the 'selected' class from all variant options
+            document.querySelectorAll('.variant-option').forEach(option => {
+              option.classList.remove('selected');
+            });
+        
+            // Add the 'selected' class to the clicked variant option
+            const selectedOption = document.getElementById(`variant-${variantId}`);
+            if (selectedOption) {
+              selectedOption.classList.add('selected');
+            }
+        
+            // Enable/disable the Add to Cart button based on variant availability
+            const addToCartButton = document.getElementById('atc');
+            const isAvailable = !selectedOption.classList.contains('pointer-events-none');
+            addToCartButton.disabled = !isAvailable;
+          }
+        
+          // Initialize the first variant as selected by default
+          document.addEventListener('DOMContentLoaded', () => {
+            const firstVariantId = {{ product.variants.first.id }};
+            selectVariant(firstVariantId);
+          });
+        </script>
+        
+        <style>
+          .variant-option.selected {
+            border: 2px solid black; /* Example style for selected variant */
+          }
+        </style>
+        <div class="pointer-events-auto flex overflow-x-hidden flex-col gap-[12px] mb-[6px] sm:mb-0">
+          <p class="bold-body">Description</p>
+          <div class="body !text-left">
+            {{ product.description }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% schema %}
+{
+  "name": "Product Section"
+}
+{% endschema %}

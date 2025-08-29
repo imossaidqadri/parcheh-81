@@ -1,0 +1,54 @@
+<section class="shopify-menu">
+  <nav class="menu-container">
+    <ul class="menu-list">
+      {% for link in section.settings.menu.links %}
+        <li class="menu-item">
+          <a
+            href="{{ link.url }}"
+            title="{{ link.title }}"
+            class="menu-link"
+            {% if link.target == '_blank' %}
+              target="_blank" rel="noopener noreferrer"
+            {% endif %}
+          >
+            {{ link.title }}
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+</section>
+
+{% style %}
+  .shopify-menu {
+    background-color: #fff;
+    padding: 20px;
+  }
+
+  .menu-container {
+    display: flex;
+    justify-content: center;
+  }
+
+  .menu-list {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .menu-item {
+    text-transform: uppercase;
+  }
+
+  .menu-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+  }
+
+  .menu-link:hover {
+    color: #007aff;
+  }
+{% endstyle %}
