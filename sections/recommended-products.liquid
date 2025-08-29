@@ -1,12 +1,16 @@
-{% paginate recommendations.products by section.settings.products_to_show %}
-  <div
-    class="px-[15px] sm:px-[30px] p-[50px] grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[15px] items-end"
-    id="product-grid"
-    data-current-page="{{ paginate.current_page }}"
-    data-total-pages="{{ paginate.pages }}"
-  >
-    {% if paginate.items.size > 0 %}
-      {% for product in recommendations.products %}
+{% assign limit = section.settings.products_to_show %}
+<div class="px-[15px] sm:px-[30px] p-[50px]">
+  {% if section.settings.heading != blank %}
+    <h2 class="page-title text-center mb-[30px]">{{ section.settings.heading }}</h2>
+  {% endif %}
+  <product-recommendations data-url="{{ routes.product_recommendations_url }}?section_id={{ section.id }}&product_id={{ product.id }}&limit={{ limit }}">
+    <div id="Recommendations-{{ section.id }}" class="recommendations">
+    {% if recommendations.performed and recommendations.products_count > 0 %}
+      <div
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[15px] items-end"
+        id="product-grid"
+      >
+        {% for product in recommendations.products limit: limit %}
         <div id="product-{{ product.id }}" class="product-card">
           <a class="hover:opacity-100" href="{{ product.url }}">
             <div class="group relative h-fit w-full">
@@ -48,40 +52,67 @@
             </div>
           </a>
         </div>
-      {% endfor %}
+        {% endfor %}
+      </div>
     {% else %}
-      <!-- Empty state message -->
+      <!-- Empty state or loading state -->
       <div class="text-center w-full">
-        <p>No products found in this collection.</p>
+        <p>Loading recommendations...</p>
       </div>
     {% endif %}
-  </div>
-
-  <!-- Pagination Controls -->
-  {% if section.settings.show_pagination %}
-    <div class="flex w-full justify-center mb-[30px]">
-      <!-- Previous Page Link -->
-      {% if paginate.previous.is_link %}
-        <a href="{{ paginate.previous.url }}" class="cta mr-[9px] font-semibold"> Previous Page </a>
-      {% else %}
-        <span class="cta mr-[9px] font-semibold pointer-events-none opacity-50"> Previous Page </span>
-      {% endif %}
-
-      <!-- Next Page Link -->
-      {% if paginate.next.is_link %}
-        <a href="{{ paginate.next.url }}" class="cta ml-[9px] font-semibold"> Next Page </a>
-      {% else %}
-        <span class="cta ml-[9px] font-semibold pointer-events-none opacity-50"> Next Page </span>
-      {% endif %}
     </div>
-  {% endif %}
-{% endpaginate %}
+  </product-recommendations>
+</div>
+
+<script>
+  class ProductRecommendations extends HTMLElement {
+    constructor() {
+      super();
+      this.init();
+    }
+
+    init() {
+      const handleIntersection = (entries, observer) => {
+        if (!entries[0].isIntersecting) return;
+        observer.unobserve(this);
+
+        const url = this.dataset.url;
+        if (url) {
+          fetch(url)
+            .then(response => response.text())
+            .then(text => {
+              const html = document.createElement('div');
+              html.innerHTML = text;
+              const recommendations = html.querySelector('.recommendations');
+
+              if (recommendations && recommendations.innerHTML.trim().length) {
+                this.innerHTML = recommendations.innerHTML;
+              }
+            })
+            .catch(e => {
+              console.error(e);
+            });
+        }
+      };
+
+      new IntersectionObserver(handleIntersection.bind(this), {rootMargin: '0px 0px 200px 0px'}).observe(this);
+    }
+  }
+
+  customElements.define('product-recommendations', ProductRecommendations);
+</script>
 {% schema %}
 {
   "name": "Recommended Products",
   "tag": "section",
   "class": "section",
   "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Recommended Products"
+    },
     {
       "type": "select",
       "id": "heading_size",
