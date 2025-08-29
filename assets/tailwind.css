@@ -4497,18 +4497,3 @@ input:checked + .toggle-bg {
 * {
   /* outline: 1px solid red; */
 }
-
-/* Footer Styles */
-.footer .stripe {
-  height: 15px;
-  background-color: white;
-}
-
-.footer a:hover {
-  text-decoration: underline;
-}
-
-.footer a[target="_blank"]:focus {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
